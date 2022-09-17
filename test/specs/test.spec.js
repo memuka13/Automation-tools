@@ -7,11 +7,15 @@ const pasteText = `
         git push origin master --force`;
 const pasteName = "how to gain dominance among developers";
 
-describe("test", () => {
+describe("Open Web Page", () => {
+
     // 1. Open https://pastebin.com or a similar service in any browser
 
     it("test1", async () => {
         await browser.url(webPage);
+        // await $("a.btn-sign.sign-in").click();
+        // await $("a.login-social.-google").click();
+        // await $("li:nth-child(1) > div").click();
     });
 
     // 2. Create a New Paste with the following details:
@@ -23,7 +27,7 @@ describe("test", () => {
     // * Paste Expiration: "10 Minutes"
     // * Paste Name / Title: "how to gain dominance among developers"
 
-    it("test2", async () => {
+    it("Create a New Paste and Save", async () => {
 
         await $("#postform-text").setValue(pasteText);
 
@@ -38,4 +42,27 @@ describe("test", () => {
         await $("div.form-group.form-btn-container > button").click();
     });
 
+    // 3. Save paste and check the following:
+    // * Browser page title matches Paste Name / Title
+    // * Syntax is suspended for bash
+    // * Check that the code matches the one entered in paragraph 2
+
+    it("Check Saved Data", async () => {
+
+        const pastedTextArea = await $("ol.bash");
+        await pastedTextArea.waitForDisplayed({
+            timeout: 5000,
+            timeoutMsg: "10 seconds passed"
+        })
+        await expect(await browser.getTitle()).toEqual(`${pasteName} - Pastebin.com`);
+
+        const value = await $("div.left > a.btn.-small.h_800").getText();
+        await expect(value).toEqual("Bash");
+
+        const inputText = await $("div.source > ol").getText();
+        const newPasteText = await pasteText.replaceAll(/\s+/gm, "");
+        const newInputText = await inputText.replaceAll(/\s+/gm, "");
+        await expect(newInputText).toEqual(newPasteText);
+    })
 })
+
